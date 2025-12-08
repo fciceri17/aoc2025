@@ -1,3 +1,4 @@
+from collections import defaultdict
 from math import sqrt
 
 with open('input.txt', 'r') as f:
@@ -37,10 +38,10 @@ for i, box in enumerate(boxes):
         target =  boxes[j]
         distances[(i,j)] = sum(abs(box[n]-target[n])**2 for n in range(3))
 
-links = sorted(distances.keys(), key=lambda x: distances[x])[:conn]
+links = sorted(distances.keys(), key=lambda x: distances[x])
 
 graph = {i:set() for i in range(len(boxes))}
-for link in links:
+for link in links[:conn]:
     graph[link[0]].add(link[1])
     graph[link[1]].add(link[0])
 
@@ -63,3 +64,23 @@ for _ in range(3):
     for node in complete_sets[max_size]:
         del complete_sets[node]
 print(tot)
+
+min_nodes = {}
+connected = {i:{i} for i in graph}
+
+for i, (start, end) in enumerate(links):
+    target = min(min_nodes.get(end, len(boxes)), min_nodes.get(start, len(boxes)), start, end)
+    connected[start].add(end)
+    connected[end].add(start)
+    queue = list(connected[start] | connected[end])
+    while queue:
+        elem = queue.pop()
+        if min_nodes.get(elem, len(boxes))!=target:
+            min_nodes[elem] = target
+            queue.extend(x for x in connected[elem])
+    if len(min_nodes)==len(boxes) and  max(min_nodes.values())==0:
+        print(min_nodes)
+        break
+
+print(boxes[start][0]*boxes[end][0])
+print(i, start, end)
