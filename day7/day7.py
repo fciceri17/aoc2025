@@ -23,16 +23,12 @@ with open('input.txt', 'r') as f:
 # .^.^.^.^.^...^.
 # ...............'''.split('\n')
 
-start = -1
+start = next(i for i, x in enumerate(data[0]) if x =='S')
 spots = defaultdict(list)
-for i, row in enumerate(data):
+for i, row in enumerate(data[1:]):
     for j, v in enumerate(row):
-        if i==0:
-            if v=='S':
-                start=j
-        else:
-            if v=='^':
-                spots[j].append(i)
+        if v=='^':
+            spots[j].append(i)
 splits=set()
 
 @cache
